@@ -1,4 +1,4 @@
-scripts
+fun-scripts
 =======
 
 fun scripts for fun things

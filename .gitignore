@@ -1,0 +1,6 @@
+# ignore emacs autorecovery files
+\#*
+# ignore emacs undo-tree files
+*.~undo-tree~
+# ignore emacs jump-to-definition
+TAGS
