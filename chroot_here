@@ -1,0 +1,6 @@
+sudo mount -o bind /proc proc
+sudo mount -o bind /dev dev
+sudo mount -o bind /dev/pts dev/pts
+sudo mount -o bind /sys sys
+sudo cp /etc/resolv.conf etc/resolv.conf
+chroot . /bin/bash
