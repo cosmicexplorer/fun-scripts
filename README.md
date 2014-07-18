@@ -1,6 +1,6 @@
-fun-scripts
+snippets
 =======
 
-fun scripts for fun things
+bits of reusable code i wanna keep around
 
-some of these might require zsh so install that
+some of the shell scripts might require zsh so install that
