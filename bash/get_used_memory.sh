@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+# due to annoying syntax issues /bin/zsh is required past the crunchbang
+
 used_and_free_mem=$(echo "$(free -m | grep buffers/cache | grep -o "[[:digit:]]*")")
 used_mem=$(echo $used_and_free_mem | head -n1)
 free_mem=$(echo $used_and_free_mem | tail -n1)
