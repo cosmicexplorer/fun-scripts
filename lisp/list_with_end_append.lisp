@@ -42,4 +42,5 @@ This structure can be used to append to the end of the given list in constant ti
   "Returns list within structure."
   (car list-with-append))
 (defun get-last-node (list-with-append)
+  "Returns final node of list, cached."
   (cdr list-with-append))
