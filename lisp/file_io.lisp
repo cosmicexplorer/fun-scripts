@@ -1,5 +1,16 @@
 ;;; various file io operations
 
+;; (defun test (func arg &rest args)
+;;   (cond ((atom args)
+;;          (test func arg))
+;;         ((atom (cdr args))
+;;          (test func (cons arg (car args))))
+;;         (t
+;;          (print 1))))
+;; (test #'1+ 2)
+;; (test 2)
+;; (test '(2))
+
 (defconstant +BLOCK-SIZE+ 8192)         ; size of block to read in
 (defconstant +CODON-LENGTH+ 3)          ; length of codon in bases
 
