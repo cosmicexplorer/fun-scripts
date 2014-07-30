@@ -6,3 +6,5 @@
 *.~undo-tree~
 # ignore emacs jump-to-definition
 TAGS
+# ignore executables
+*exe
