@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# authored by Dr. William Roundtree Otte
+# <w.otte@vanderbilt.edu>
+
 # Lints files for common style violations
 
 echo "Checking for trailing whitespace...."

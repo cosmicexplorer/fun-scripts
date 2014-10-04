@@ -1,9 +1,13 @@
 #!/bin/python
 
-import sys
+# authored by Danny McClanahan
+# <daniel.d.mcclanahan@vanderbilt.edu>
 
-allUserFolders = sys.argv[1]
-assnUserFolders = sys.argv[2]
+import sys
+import os
+
+allUserFolders = os.path.expanduser(sys.argv[1])
+assnUserFolders = os.path.expanduser(sys.argv[2])
 
 allUserFoldersFile = open(allUserFolders, "r")
 assnUserFoldersFile = open(assnUserFolders, "r")

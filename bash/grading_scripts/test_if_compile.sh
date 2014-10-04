@@ -1,11 +1,16 @@
 #!/bin/bash
 
+# authored by Danny McClanahan
+# <daniel.d.mcclanahan@vanderbilt.edu>
+
 # a script tuned to the Vanderbilt CS 251 SVN server directory layout
 # and cmake build system to run a variety of automatic tests on
 # assignments and preformat the grading output
 
 # this also calls a couple python scripts, which should be in the same
 # directory
+
+# weird metacharacters at the beginning of strings are to color terminal output
 
 # some brittle assignment-specific extras such as looking for which
 # files should be in the repository are added under the heading
@@ -22,27 +27,31 @@
 # $4: path to correct CMakeLists.txt (ABSOLUTE PATH)
 # $5: name of grader
 
-## useful commands
+## other useful commands to fix when you screw things up
 # revert all files in directory, recursively
 # svn revert -R .
 # remove all untracked files in directory, recursively
+## http://stackoverflow.com/a/10414599/3753841
 # svn st | grep '^?' | awk '{print $2}' | xargs rm -rf
 
-
 # find which student folders have no such assignment folders
+
+
+## http://stackoverflow.com/a/246128/3753841
+WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ls -d */ | grep -o "[[:alnum:]]*" > all_user_folders
 
 find . -name "$1" | \
-	grep -o "/[[:alnum:]]*/" | \
-	grep -o "[[:alnum:]]*" >  assn_user_folders
+    grep -o "/[[:alnum:]]*/" | \
+    grep -o "[[:alnum:]]*" >  assn_user_folders
 
 echo -e "\033[1;35mUsers without the assignment directory:\033[1;0m"
 
-num_no_dir="$(~/display_not_found_folders.py all_user_folders assn_user_folders\
-								| wc -l)"
+num_no_dir="$($WORKING_DIR/display_not_found_folders.py all_user_folders \
+	      assn_user_folders | wc -l)"
 
-~/display_not_found_folders.py all_user_folders assn_user_folders
+$WORKING_DIR/display_not_found_folders.py all_user_folders assn_user_folders
 
 echo -e "\033[1;34mtotal: $num_no_dir\033[1;0m"
 
@@ -71,8 +80,8 @@ while read student; do
     # check if correct files are in folder
     # ArrayList.h  ArrayList.tpp  CMakeLists.txt  main.cpp  ScopedArray.h
     if [ "$(ls)" != \
-      $'ArrayList.h\nArrayList.tpp\nCMakeLists.txt\nmain.cpp\nScopedArray.h' ];\
-	then
+        $'ArrayList.h\nArrayList.tpp\nCMakeLists.txt\nmain.cpp\nScopedArray.h' ]
+        then
         echo -e "\033[0;33mwrong files found: $student\033[1;0m"
         file_check_error="true"
     fi
@@ -83,6 +92,7 @@ while read student; do
     else
         echo -e "\033[0;34mCMakeLists.txt not found: $student\033[1;0m"
     fi
+    # end assignment-specific
 
     rm -r CMakeFiles 2>/dev/null
     rm CMakeCache.txt 2>/dev/null
@@ -137,7 +147,7 @@ while read student; do
         ../cs251Grades.txt
     # assignment-specific linting
     # Assignment 3-1
-    lint_output="$(~/lint_minus_3.5.sh ArrayList.tpp)"
+    lint_output="$($WORKING_DIR/lint_minus_3.5.sh ArrayList.tpp)"
     if [ "$(echo $lint_output | grep "ERROR" | grep "whitespace")" != "" ]; \
         then
         echo -e "[-3]  Trailing whitespace at end of lines." >> \
@@ -147,7 +157,8 @@ while read student; do
         echo -e "[-3]  Tabs used for indentation instead of spaces." >> \
             ../cs251Grades.txt
     fi
-    if [ "$(~/is_file_line_greater_than_80_chars.py ArrayList.tpp)" = "yes" ]; \
+    if [ "$($WORKING_DIR/is_file_line_greater_than_80_chars.py ArrayList.tpp)" \
+        = "yes" ]
         then
         echo -e "[-2]  line(s) greater than 80 characters long" >> \
             ../cs251Grades.txt

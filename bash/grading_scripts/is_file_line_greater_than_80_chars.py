@@ -1,10 +1,12 @@
 #!/bin/python
 
+# authored by Danny McClanahan
+# <daniel.d.mcclanahan@vanderbilt.edu>
+
 import sys
 import os
 
-infile_name = sys.argv[1]
-infile_path = os.path.expanduser(infile_name)
+infile_path = os.path.expanduser(sys.argv[1])
 infile = open(infile_path, "r")
 
 is_longer = False
