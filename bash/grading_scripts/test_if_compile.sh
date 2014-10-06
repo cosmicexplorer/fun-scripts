@@ -128,7 +128,7 @@ while read student; do
     svn lock ../cs251Grades.txt > /dev/null
     echo -e "\n---------------------------------------------\n" >> \
         ../cs251Grades.txt
-    echo "$2 (graded by $5)" >> ../cs251Grades.txt
+    echo -e "$2\n(graded by $5)" >> ../cs251Grades.txt
     echo -e "Total: /100\n" >> ../cs251Grades.txt
     if [ "$make_error" != "" ]; then
         echo -e "\n$make_error\n" >> ../cs251Grades.txt
