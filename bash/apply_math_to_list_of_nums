@@ -1,9 +1,19 @@
-#!/bin/zsh
+#!/bin/bash
 
-# $1: operator
-# $2: list of numbers
+# $1: operator (MUST BE QUOTED)
+# $2: list of numbers (quoted string)
+# $3: precision (optional)
 
-# bc is multiple-precision so this should be pretty accurate
+if [ "$3" = "" ]; then
+    scale="2"
+else
+    scale="$3"
+fi
 
-inputWithOp=$(echo $2 | paste -sd "$1")
-echo "scale=2;$inputWithOp" | bc
+for char in $2; do
+    echo $char >> .apply_math_file
+done
+inputWithOp="$(paste -sd \\$1 .apply_math_file)"
+echo "$inputWithOp"
+echo "scale=$scale; $inputWithOp" | bc
+rm .apply_math_file

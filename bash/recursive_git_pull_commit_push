@@ -51,7 +51,7 @@ while read -r dir; do
         run_quiet_and_cancel_if_failed "git stash apply" "No stash found"
         run_quiet_and_cancel_if_failed "git add ."
         run_quiet_and_cancel_if_failed "git commit -m $COMMIT_MESSAGE" \
-            "up-to-date"
+            "nothing to commit"
         if [ "$(ls .nopush 2>/dev/null)" = "" ]; then
             run_quiet_and_cancel_if_failed "git push"
         fi
