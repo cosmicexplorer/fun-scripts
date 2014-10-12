@@ -32,7 +32,7 @@
 # svn revert -R .
 # remove all untracked files in directory, recursively
 ## http://stackoverflow.com/a/10414599/3753841
-# svn st | grep '^?' | awk '{print $2}' | xargs rm -rf
+# svn st | grep '^?' | xargs rm -rf
 
 # find which student folders have no such assignment folders
 
