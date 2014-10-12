@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep -P -o "(?<=0;).*" ~/.zsh_history | grep $1
