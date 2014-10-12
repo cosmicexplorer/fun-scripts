@@ -60,6 +60,7 @@ while read -r dir; do
     fi
     cd $INITIAL_WORKING_DIR
 done <<< "$(find . -type d | grep ".git" | grep "/\.git$")"
-
 # using find like this "flattens out" the recursion, which helps performance (I
 # think); consider storing output of find in variable; see if that helps speed
+
+killall ssh-agent
