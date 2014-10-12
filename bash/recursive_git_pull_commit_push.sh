@@ -20,7 +20,7 @@ eval "$(ssh-agent -s)" > /dev/null
 ssh-add ~/.ssh/id_rsa
 
 # $1: command to run
-# $2: acceptable output for command
+# $2: acceptable output for command, even if nonzero return code
 # $3: command to run if $1 fails
 run_quiet_and_cancel_if_failed(){
     COMMAND_OUTPUT="$($1 2>&1)"
@@ -53,7 +53,7 @@ while read -r dir; do
         if [ "$(ls .nopush 2>/dev/null)" = "" ]; then
             run_quiet_and_cancel_if_failed "git push"
         fi
-        echo "done"
+        echo  "done"
     fi
     cd $INITIAL_WORKING_DIR
 done <<< "$(find . -type d | grep ".git" | grep "/\.git$")"
