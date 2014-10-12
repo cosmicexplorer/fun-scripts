@@ -21,6 +21,8 @@ INITIAL_WORKING_DIR="$(pwd)"
 # COMMIT_MESSAGE has actual quotes in it
 COMMIT_MESSAGE="autocommit"
 
+# random comment added
+
 # get password so don't prompt for ssh pass when pushing/pulling
 eval "$(ssh-agent -s)" > /dev/null
 ssh-add ~/.ssh/id_rsa
