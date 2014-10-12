@@ -24,7 +24,7 @@ ssh-add ~/.ssh/id_rsa
 # $1: command to run
 # $2: acceptable output for command, even if nonzero return code
 # $3: command to run if $1 fails
-run_quiet_and_cancel_if_failed(){
+run_and_cancel_if_failed(){
     COMMAND_OUTPUT="$($1 2>&1)"
     COMMAND_RESULT="$?"
     [ "$2" != "" ] && [ "$(echo $COMMAND_OUTPUT | grep "$2")" != "" ] && \
@@ -44,17 +44,18 @@ while read -r dir; do
     if [ "$(ls .autoignore 2>/dev/null)" = "" ]; then
         echo -n "updating repository $(pwd)..."
         # stashed so merge abort doesn't explode
-        run_quiet_and_cancel_if_failed "git stash" "local changes"
-        run_quiet_and_cancel_if_failed "git fetch --all"
-        run_quiet_and_cancel_if_failed "git merge -m $COMMIT_MESSAGE" "" \
+        run_and_cancel_if_failed "git stash" "local changes"
+        run_and_cancel_if_failed "git fetch --all"
+        run_and_cancel_if_failed "git merge -m $COMMIT_MESSAGE" "" \
             "git merge --abort"     # consider git reset --hard ORIG_HEAD
-        run_quiet_and_cancel_if_failed "git stash apply" "No stash found"
-        run_quiet_and_cancel_if_failed "git add ."
-        run_quiet_and_cancel_if_failed "git commit -m $COMMIT_MESSAGE" \
+        run_and_cancel_if_failed "git stash apply" "No stash found"
+        run_and_cancel_if_failed "git add ."
+        run_and_cancel_if_failed "git commit -m $COMMIT_MESSAGE" \
             "nothing to commit"
         if [ "$(ls .nopush 2>/dev/null)" = "" ]; then
-            run_quiet_and_cancel_if_failed "git push"
+            run_and_cancel_if_failed "git push"
         fi
+        run_and_cancel_if_failed "git stash drop stash@{0}" "unknown revision"
         echo -e "\033[1;32mdone\033[1;0m"
     fi
     cd $INITIAL_WORKING_DIR
