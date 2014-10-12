@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# MARK REPOSITORIES NOT TO BE MODIFIED BY THIS TOOL BY ADDING A FILE NAMED
+# .nopush TO THE REPO
+# MARK REPOSITORIES NOT TO BE TRACKED BY THIS TOOL BY ADDING A FILE NAMED
+# .autoignore TO THE REPO
+
 # run git pull in all subdirectories of the top directory
 # if git status non-empty, add all and commit with message
 # "automated commit," and run push
@@ -34,18 +39,22 @@ run_quiet_and_cancel_if_failed(){
 while read -r dir; do
     cd $dir
     cd ..                       # $dir is a .git dir, so move to actual repo dir
-    echo -n "updating repository $(pwd)..."
-    # stashed so merge abort doesn't explode
-    run_quiet_and_cancel_if_failed "git stash" "local changes"
-    run_quiet_and_cancel_if_failed "git fetch --all"
-    run_quiet_and_cancel_if_failed "git merge -m $COMMIT_MESSAGE" ""\
+    if [ "$(ls .autoignore 2>/dev/null)" = "" ]; then
+        echo -n "updating repository $(pwd)..."
+        # stashed so merge abort doesn't explode
+        run_quiet_and_cancel_if_failed "git stash" "local changes"
+        run_quiet_and_cancel_if_failed "git fetch --all"
+        run_quiet_and_cancel_if_failed "git merge -m $COMMIT_MESSAGE" ""\
         "git merge --abort"     # also consider git reset --hard ORIG_HEAD
-    run_quiet_and_cancel_if_failed "git stash apply" "No stash found"
-    run_quiet_and_cancel_if_failed "git add ."
-    run_quiet_and_cancel_if_failed "git commit -m $COMMIT_MESSAGE" \
-        "up-to-date"
-    run_quiet_and_cancel_if_failed "git push"
-    echo "done"
+        run_quiet_and_cancel_if_failed "git stash apply" "No stash found"
+        run_quiet_and_cancel_if_failed "git add ."
+        run_quiet_and_cancel_if_failed "git commit -m $COMMIT_MESSAGE" \
+            "up-to-date"
+        if [ "$(ls .nopush 2>/dev/null)" = "" ]; then
+            run_quiet_and_cancel_if_failed "git push"
+        fi
+        echo "done"
+    fi
     cd $INITIAL_WORKING_DIR
 done <<< "$(find . -type d | grep ".git" | grep "/\.git$")"
 # using find like this "flattens out" the recursion, which helps performance (I
