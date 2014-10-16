@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# outputs lines of file, delimited by newline
+
+# lines begin at 1
+
+# $1: file to show lines of
+# $2-$inf: line numbers of file
+
+cur_arg_count="0"
+for line_num in "$@"; do
+    if [ "$cur_arg_count" -ne 0 ]; then
+        head "$1" -n$line_num | tail -n1
+    fi
+    ((cur_arg_count++))
+done
