@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# PARSING HTML WITH REGEXES!!!!
+
 # $1: url of page with links to files
 # $2: filetype extension to download
 
