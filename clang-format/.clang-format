@@ -1,6 +1,5 @@
 # options documented in http://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
-Language: Cpp # used for C as well, not just C++
 AccessModifierOffset: -1 # in line with class declaration
 AlignEscapedNewlinesLeft: true
 AlignTrailingComments: true
@@ -17,16 +16,17 @@ BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
 ColumnLimit: 80
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
-ConstructorInitializerIndentWidth: 6 # to differentiate from normal lines
-ContinuationIndentWidth: 4 # to differentiate from normal lines
+ConstructorInitializerIndentWidth: 2 # to differentiate from normal lines
+ContinuationIndentWidth: 2 # to differentiate from normal lines
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
 IndentCaseLabels: false
-IndentWidth: 2 # spaces not tabs
+IndentWidth: 4 # spaces not tabs
 IndentWrappedFunctionNames: true
 KeepEmptyLinesAtTheStartOfBlocks: true
+Language: Cpp # used for C as well, not just C++
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 PointerAlignment: Middle
