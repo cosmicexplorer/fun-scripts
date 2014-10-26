@@ -145,8 +145,7 @@ while read student; do
         echo -e "[-3]  Tabs used for indentation instead of spaces." >> \
             ../cs251Grades.txt
     fi
-    command="$WORKING_DIR/is_file_line_greater_than_80_chars.py"
-    result="$($command {LinkedList*,ArrayList*})"
+    result="$($WORKING_DIR/is_file_line_greater_than_80_chars.py *.tpp)"
     if [ "$result" = "yes" ]; then
         echo -e "[-2]  line(s) greater than 80 characters long" >> \
             ../cs251Grades.txt
