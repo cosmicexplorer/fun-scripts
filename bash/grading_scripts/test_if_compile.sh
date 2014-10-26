@@ -151,6 +151,11 @@ while read student; do
             ../cs251Grades.txt
     fi
     echo "" >> ../cs251Grades.txt
+    # check if CMake output is in folder
+    if [ -d "CMakeFiles" ] || [ -f "CMakeCache.txt" ] || [ -f "Makefile" ] || \
+           [ -f "cmake_install.cmake" ]; then
+        echo -e "[-5] CMake output in assignment folder" >> ../cs251Grades.txt
+    fi
     # assignment-specific file existence checking
     # Assignment 3-1
     if [ "$file_check_error" != "" ]; then
