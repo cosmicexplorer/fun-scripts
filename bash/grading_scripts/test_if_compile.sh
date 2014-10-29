@@ -32,7 +32,6 @@
 # revert all files in directory, recursively
 # svn revert -R .
 # remove all untracked files in directory, recursively
-## http://stackoverflow.com/a/10414599/3753841
 # svn st | grep '^?' | xargs rm -rf
 
 # find which student folders have no such assignment folders
@@ -134,21 +133,31 @@ while read student; do
     echo -e "(/15) Insightful Programming\n" >> ../cs251Grades.txt
     echo -e "(/15) Appropriate coding and commenting style" >> \
         ../cs251Grades.txt
-    # assignment-specific linting
+    # assignment-specific changes required for files to search
     # Assignment 3-1
-    lint_output="$(cat LinkedList* ArrayList* | $WORKING_DIR/lint_minus_3.5.sh)"
-    if [ "$(echo $lint_output | grep "ERROR" | grep "whitespace")" != "" ]; then
-        echo -e "[-3]  Trailing whitespace at end of lines." >> \
-            ../cs251Grades.txt
+    grep_trailing_whitespace_output\
+        ="$(egrep -in "[[:space:]]+$" LinkedList* ArrayList*)"
+    if [ "$grep_trailing_whitespace_output" != "" ]; then
+        echo "[-3]  Trailing whitespace at end of lines." >> \
+             ../cs251Grades.txt
+        echo "lines affected:" >> ../cs251Grades.txt
+        echo "$grep_trailing_whitespace_output" >> ../cs251Grades.txt
+
     fi
-    if [ "$(echo $lint_output | grep "ERROR" | grep "tab")" != "" ]; then
-        echo -e "[-3]  Tabs used for indentation instead of spaces." >> \
-            ../cs251Grades.txt
+    grep_tab_output="$(grep -in -P '\t' LinkedList* ArrayList*)"
+    if [ "$grep_tab_output" != "" ]; then
+        echo "[-3]  Tabs used for indentation instead of spaces." >> \
+             ../cs251Grades.txt
+        echo "lines affected:" >> ../cs251Grades.txt
+        echo "$grep_tab_output" >> ../cs251Grades.txt
     fi
-    result="$($WORKING_DIR/is_file_line_greater_than_80_chars.py *.tpp)"
-    if [ "$result" = "yes" ]; then
-        echo -e "[-2]  line(s) greater than 80 characters long" >> \
-            ../cs251Grades.txt
+    result\
+        ="$($WORKING_DIR/is_file_line_greater_than_80_chars.py LinkedList* ArrayList*)"
+    if [ "$result" != "" ]; then
+        echo "[-2]  line(s) greater than 80 characters long" >> \
+             ../cs251Grades.txt
+        echo "lines affected:" >> ../cs251Grades.txt
+        echo "$result" >> ../cs251Grades.txt
     fi
     echo "" >> ../cs251Grades.txt
     # check if CMake output is in folder

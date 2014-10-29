@@ -6,15 +6,15 @@
 # $2: filetype extension to download
 
 # positive lookbehind for links
-paths_to_files_of_type="$(curl "$1" | grep -P -o "(?<=href=\").*$2")"
+paths_to_files_of_type="$(curl "$1" --insecure | grep -P -o "(?<=href=\").*$2")"
 
 url_stripped_of_end="$(echo $1 | grep -o -P '.*(?=/)')"
 
 while read -r line; do
     if [ "$(echo $line | grep "^http")" ]; then
-        wget "$line"
+        wget "$line" --no-check-certificate
     else
-        wget "$url_stripped_of_end/$line"
+        wget "$url_stripped_of_end/$line" --no-check-certificate
     fi
 done <<< "$paths_to_files_of_type"
 
