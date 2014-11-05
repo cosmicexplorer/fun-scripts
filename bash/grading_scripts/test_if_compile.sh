@@ -78,19 +78,19 @@ while read student; do
     # Assignment 3-1
     file_check_error=""
     # check if correct files are in folder
-    if [ "$(ls)" != "$(cat $5)" ]
-        then
-        echo -e "\033[0;33mwrong files found: $student\033[1;0m"
-        file_check_error="true"
-    fi
+    # if [ "$(ls)" != "$(cat $5)" ]
+    #     then
+    #     echo -e "\033[0;33mwrong files found: $student\033[1;0m"
+    #     file_check_error="true"
+    # fi
+    # end assignment-specific
     if [ -e "CMakeLists.txt" ]; then
-        if [ "$(cmp -l "CMakeLists.txt" "$3" 2>&1)" != "" ]; then
-	    echo -e "\033[1;30mCMakeLists.txt differs\033[1;0m"
-        fi
+        # if [ "$(cmp -l "CMakeLists.txt" "$3" 2>&1)" != "" ]; then
+	#     echo -e "\033[1;30mCMakeLists.txt differs\033[1;0m"
+        # fi
     else
         echo -e "\033[0;34mCMakeLists.txt not found: $student\033[1;0m"
     fi
-    # end assignment-specific
 
     cmake . 2>/dev/null 1>/dev/null
     if [ "$?" -ne 0 ]; then
@@ -136,7 +136,7 @@ while read student; do
     # assignment-specific changes required for files to search
     # Assignment 3-1
     grep_trailing_whitespace_output\
-        ="$(egrep -in "[[:space:]]+$" LinkedList* ArrayList*)"
+        ="$(egrep -in "[[:space:]]+$" *.h *.cpp *.tpp | grep -v main)"
     if [ "$grep_trailing_whitespace_output" != "" ]; then
         echo "[-3]  Trailing whitespace at end of lines." >> \
              ../cs251Grades.txt
@@ -144,7 +144,7 @@ while read student; do
         echo "$grep_trailing_whitespace_output" >> ../cs251Grades.txt
 
     fi
-    grep_tab_output="$(grep -in -P '\t' LinkedList* ArrayList*)"
+    grep_tab_output="$(grep -in -P '\t' *.h *.cpp *.tpp | grep -v main)"
     if [ "$grep_tab_output" != "" ]; then
         echo "[-3]  Tabs used for indentation instead of spaces." >> \
              ../cs251Grades.txt
@@ -152,7 +152,7 @@ while read student; do
         echo "$grep_tab_output" >> ../cs251Grades.txt
     fi
     result\
-        ="$($WORKING_DIR/is_file_line_greater_than_80_chars.py LinkedList* ArrayList*)"
+        ="$($WORKING_DIR/is_file_line_greater_than_80_chars.py *.h *.cpp *.tpp | grep -v main)"
     if [ "$result" != "" ]; then
         echo "[-2]  line(s) greater than 80 characters long" >> \
              ../cs251Grades.txt
