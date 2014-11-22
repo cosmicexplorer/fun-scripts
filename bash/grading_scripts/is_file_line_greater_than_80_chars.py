@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python3
 
 # authored by Danny McClanahan
 # <daniel.d.mcclanahan@vanderbilt.edu>

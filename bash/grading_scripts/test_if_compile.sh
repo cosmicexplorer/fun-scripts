@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# /path/to/test_if_compile.sh "Assignment5-1" "Assignment 5a" "" "Jesse Badash"
+
 # authored by Danny McClanahan
 # <daniel.d.mcclanahan@vanderbilt.edu>
 
@@ -17,8 +19,8 @@
 # "assignment-specific," and should be modified upon each use
 
 ## currently running as:
-# ~/test_if_compile.sh "Assignment3-1" "Assignment 3-1" \
-# ~/CMakeLists.txt "Danny McClanahan"
+# ~/test_if_compile.sh "Assignment5-1" "Assignment 5a" \
+# ~/CMakeLists.txt "Jesse Badash"
 # ~/correct_file_list | tee auto_grade_output_log
 
 ## args
