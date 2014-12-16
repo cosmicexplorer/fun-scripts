@@ -33,12 +33,13 @@
        (replace-symbol-in-sexp-fn symbol-to-replace new-symbol (cdr sexp)))))
 
 ;;; not working, whatever
+;;; TODO: learn how to do this for body-forms
 ;; (defmacro replace-symbol-in-body (new-symbol symbol-to-replace &body body)
 ;;   (remove-one-outer-paren
 ;;    (loop for sexp in body
 ;;       collect `(subst ,new-symbol ,symbol-to-replace ',sexp))))
 
-(defmacro replace-symbol-in-sexp (new-symbol symbol-to-replace sexp)
-  `(eval ,`(subst ,new-symbol ,symbol-to-replace ',sexp)))
 
-;;; TODO: learn how to do this for body-forms
+;;; TODO: make the subst happen at compile-time, if efficiency required
+(defmacro replace-symbol-in-sexp (new-symbol symbol-to-replace sexp)
+  `(eval (subst ,new-symbol ,symbol-to-replace ',sexp)))
