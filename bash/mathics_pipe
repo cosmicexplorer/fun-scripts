@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cat | mathics | grep -P "Out\[[[:digit:]]+\]=" |\
+  grep -Po "(?<=\]= ).*$"
