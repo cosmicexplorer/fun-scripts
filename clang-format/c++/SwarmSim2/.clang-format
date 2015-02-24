@@ -17,8 +17,8 @@ BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
 ColumnLimit: 80
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
-ConstructorInitializerIndentWidth: 6 # to differentiate from normal lines
-ContinuationIndentWidth: 4 # to differentiate from normal lines
+ConstructorInitializerIndentWidth: 3 # to differentiate from normal lines
+ContinuationIndentWidth: 1 # to differentiate from normal lines
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 DisableFormat: false

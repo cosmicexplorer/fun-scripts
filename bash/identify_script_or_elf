@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# $1: the filename to test
+# $2: the command to run if the file is found to be executable
+
+# $1: filename
+function is_binary (){
+  if [ "$(readelf -a "$1" 2>&1 | head -n1 | grep Error)" = "" ]; then
+    echo "true"
+  fi
+}
+
+# $1: filename
+function is_script (){
+  # python
+  if [ "$(echo "$1" | grep "\.py$" )" != "" ]; then
+    echo "true"
+  # ruby
+  elif [ "$(echo "$1" | grep "\.rb$" )" != "" ]; then
+    echo "true"
+  elif [ "$(echo "$1" | grep "\.sh$" )" != "" ]; then
+    echo "true"
+  elif [ "$(echo "$1" | grep "\.js$" )" != "" ]; then
+    echo "true"
+  elif [ "$(head -n1 "$1" | grep "^#!" )" != "" ]; then
+    echo "true"
+  elif [ "$(echo "$1" | grep "\.pl$" )" != "" ]; then
+    echo "true"
+  fi
+}
+
+
+is_exec="false"
+
+if [ "$(is_binary "$1")" != "" ]; then
+  is_exec="true"
+elif [ "$(is_script "$1")" != "" ]; then
+  is_exec="true"
+fi
+
+if [ "$is_exec" != "false" ]; then
+  $2 "$1"
+fi
