@@ -8,3 +8,5 @@
 TAGS
 # ignore executables
 *exe
+# ignore node_modules/ from node projects
+node_modules/
