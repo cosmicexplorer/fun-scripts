@@ -1,6 +1,6 @@
 # finds number of operations required to multiply matrices in a specified order
 # usage:
-#   node matrices.js "((5x4 4x4) 4x3)"
+#   coffee matrices.coffee "((5x4 4x4) 4x3)"
 
 matStr = process.argv[2]
 
