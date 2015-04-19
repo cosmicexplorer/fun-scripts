@@ -1,3 +1,26 @@
+fs = require 'fs'
+
+BylineStream = require './test-transform'
+Transform = require('stream').Transform
+
+TT =
+class TT extends Transform
+  constructor: (opts) ->
+    if not @ instanceof TT
+      return new TT
+    else
+      Transform.call @, opts
+
+    @src = null
+    @on 'pipe', (src) =>
+      @src = src
+    @on 'unpipe', (src) =>
+      @src = null
+
+  _transform: (chunk, enc, cb) ->
+    strAAA = chunk.toString()
+    @push strAAA
+    if strAAA.match /strAAA\.match/g
 --># http://stackoverflow.com/questions/29721851/how-to-pause-and-unpause-node-object-stream-while-processing-its-output
 -->
 -->fs = require 'fs'
@@ -14,52 +37,6 @@
 -->  line = chunk.toString()
 -->  outStream.write "-->#{line}"
 -->  if line.match /line\.match/g
-# http://stackoverflow.com/questions/29721851/how-to-pause-and-unpause-node-object-stream-while-processing-its-output
-
-fs = require 'fs'
-
-TestTransform = require './test-transform'
-
-inStream = new TestTransform
-
-fs.createReadStream("./test.coffee").pipe(inStream)
-
-outStream = fs.createWriteStream("./test_out")
-
-inStream.on 'data', (chunk) ->
-  line = chunk.toString()
-  outStream.write "-->#{line}"
-  if line.match /line\.match/g
-    inStream.pause()
-    f = fs.createReadStream("./test.coffee")
-    f.pipe(outStream)
-    f.removeAllListeners 'end'
-    f.on 'end', ->
-      f.unpipe(outStream)
-      inStream.resume()
-
-# test whether you can get data from events as well as piping
-t = new TestTransform
-linesArr = []
-pushArr = []
-t.on 'line', (line) ->
-  linesArr.push line
-t.on 'data', (chunk) ->
-  pushArr.push chunk.toString()
-t.on 'end', ->
-  console.log "linesArr: #{linesArr.length}"
-  console.log "pushArr: #{pushArr.length}"
-  bad = no
-  for i in [0..(linesArr.length - 1)] by 1
-    if linesArr[i] isnt pushArr[i]
-      bad = yes
-      console.error "linesArr[#{i}]: #{linesArr[i]}"
-      console.error "pushArr[#{i}]: #{pushArr[i]}"
-  if not bad
-    console.log "yay!"
-  else
-    console.log "boo :("
-fs.createReadStream('./test.coffee').pipe(t)
 -->    inStream.pause()
 -->    f = fs.createReadStream("./test.coffee")
 -->    f.pipe(outStream)
@@ -90,4 +67,22 @@ fs.createReadStream('./test.coffee').pipe(t)
 -->  else
 -->    console.log "boo :("
 -->fs.createReadStream('./test.coffee').pipe(t)
+--># you can! cool
 -->
+      newStream = new TT
+      newStream.on 'data', (chunk) =>
+        @push "-->" + chunk.toString()
+      newStream.on 'error', (err) =>
+        @emit 'error', err
+      @src?.pause()
+      newStream.on 'end', =>
+        @src?.resume()
+      fs.createReadStream('./test.coffee')
+        .pipe(new BylineStream).pipe(newStream)
+    cb?()
+
+fs.createReadStream('./test-transform-pause-input.coffee')
+  .pipe(new BylineStream)
+  .pipe(new TT)
+  .pipe(fs.createWriteStream("test_transform_out"))
+
