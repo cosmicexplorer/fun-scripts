@@ -8,12 +8,16 @@ inStream = new TestTransform
 
 fs.createReadStream("./test.coffee").pipe(inStream)
 
+outStream = fs.createWriteStream("./test_out")
+
 inStream.on 'data', (chunk) ->
   line = chunk.toString()
-  process.stdout.write "-->#{line}"
+  outStream.write "-->#{line}"
   if line.match /line\.match/g
     inStream.pause()
     f = fs.createReadStream("./test.coffee")
+    f.pipe(outStream)
+    f.removeAllListeners 'end'
     f.on 'end', ->
+      f.unpipe(outStream)
       inStream.resume()
-    f.pipe(process.stdout)
