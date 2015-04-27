@@ -21,7 +21,7 @@ curl 2>/dev/null $URL | \
         sed -e "s/^/$(echo $problem | sed -re "s/\/[^\/]+$/\//g" | \
                 sed -re "s/\\//\\\\\//g")/g"
     done | \
-    while read -r file; do
-      curl 2>/dev/null $file > $(echo $file | sed -re "s/.*\///g")
-      echo "done with $file"
-    done
+      while read -r file; do
+        curl 2>/dev/null $file > $(echo $file | sed -re "s/.*\///g")
+        echo "done with $file"
+      done
