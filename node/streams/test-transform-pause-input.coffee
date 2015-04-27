@@ -7,7 +7,7 @@ TT =
 class TT extends Transform
   constructor: (opts) ->
     if not @ instanceof TT
-      return new TT
+      return new TT opts
     else
       Transform.call @, opts
 
