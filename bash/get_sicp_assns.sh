@@ -4,6 +4,8 @@
 # there's no reason for this to exist, I just got bored downloading them all by
 # hand and wanted a "quicker" solution
 
+# relies on pup the html parser, available at https://github.com/EricChiang/pup
+
 URL=https://mitpress.mit.edu/sicp/psets/
 
 curl 2>/dev/null $URL | \
