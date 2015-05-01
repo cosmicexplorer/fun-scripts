@@ -53,6 +53,12 @@ function push_until_connect {
   done
 }
 
+finalFile=""
+function cleanup_last_file {
+  rm -f $finalFile
+}
+trap cleanup_last_file SIGHUP SIGINT SIGTERM
+
 # send list of all files to remote host
 # if we ever need to use this multiple times over a massive number of files
 # we'll use some database or something; this would likely have timestamps too
@@ -89,6 +95,7 @@ fi
 nc -l -p $3 | if hash pv; then pv -pter; else cat; fi | \
   tar --extract "--$5" --file=- -v 2>&1 | \
   while read -r line; do
+    finalFile="$line"
     ((numExtracted++))
     sizeExtracted="$(echo "$fileSizes" | head -n1)"
     totalExtracted="$(echo "$totalExtracted + $sizeExtracted" | bc)"
