@@ -35,16 +35,12 @@ fi
 
 
 # utility functions
-tmpdir="$(mktemp -d)"
-fifopath="$tmpdir/fifo"
-mkfifo "$fifopath"
 function nc_try_until_connect {
-  numTries="0"
+  # numTries="0"
   echo -n " "                   # allows for \r next line
-  while ! nc -cv $1 $2 2>>(cat > "$fifopath" &); do
-    ((numTries++))
-    echo -n -e "\\r$numTries FAILED ATTEMPTS: $1:$2 with \
-$(cat "$fifopath" | tr -d '\n')"
+  while ! nc -c $1 $2; do
+    # ((numTries++))
+    # echo -en "\r$numTries FAILED ATTEMPTS: $1:$2"
   done
   echo
 }
@@ -63,6 +59,7 @@ if [ "$numFiles" = "0" ]; then
   exit
 fi
 numBytes="$(nc -l -p $2)"
+
 
 # do the copying now
 numExtracted=0

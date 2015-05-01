@@ -27,15 +27,12 @@ fi
 
 
 # utility functions
-tmpdir="$(mktemp -d)"
-fifopath="$tmpdir/fifo"
-mkfifo "$fifopath"
 function nc_try_until_connect {
-  numTries="0"
+  # numTries="0"
   echo -n " "                   # allows for \r next line
-  while ! nc -cv $1 $2 2>>(tr -d '\n' > "$fifopath" &); do
-    ((numTries++))
-    echo -en "\r$numTries FAILED ATTEMPTS: $1:$2 with $(cat "$fifopath")"
+  while ! nc -c $1 $2; do
+    # ((numTries++))
+    # echo -en "\r$numTries FAILED ATTEMPTS: $1:$2"
   done
   echo
 }
@@ -53,8 +50,8 @@ if [ "$numFiles" != "0" ]; then
   # tell them number of bytes
   echo $filesToTransfer | xargs du -bc | tail -n1 | grep -Eo "^[[:digit:]]+" | \
     nc_try_until_connect $1 $2
-  tar "--$3" --create --to-stdout $filesToTransfer | nc_try_until_connect $1 $2
+  tar "--$3" --create --to-stdout $(echo -e $filesToTransfer) | \
+    nc_try_until_connect $1 $2
 fi
 
 echo "synced!"
-rm -rf "$tmpdir"
