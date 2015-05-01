@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # $1: host
 # $2: port
@@ -28,29 +28,28 @@ fi
 
 # utility functions
 function nc_try_until_connect {
-  # numTries="0"
-  echo -n " "                   # allows for \r next line
   while ! nc -c $1 $2; do
-    # ((numTries++))
-    # echo -en "\r$numTries FAILED ATTEMPTS: $1:$2"
+    echo -n ""
   done
-  echo
 }
 
 # listen for all files by remote host and diff to get needed files
 filesToTransfer="$(diff <(nc -l -p $2 | sort) \
-<(find . -type f ${@:5} | sort) \
+<(find . -type f ${@:5} -print0 | tr "\0" "\n" | sort) \
 --unchanged-line-format="" --old-line-format="")"
 
 # now tell them how many files they're getting and how big they are
 numFiles="$(echo $filesToTransfer | wc -w)"
 echo $numFiles | nc_try_until_connect $1 $2
 
-if [ "$numFiles" != "0" ]; then
-  # tell them number of bytes
-  echo $filesToTransfer | xargs du -bc | tail -n1 | grep -Eo "^[[:digit:]]+" | \
-    nc_try_until_connect $1 $2
-  tar "--$3" --create --to-stdout $(echo -e $filesToTransfer) | \
+if [ $numFiles -ne 0 ]; then
+  # now tell them how big the files are
+  for file in $filesToTransfer; do
+    du -b "$file" | grep -Eo "^[[:digit:]]+"
+  done | nc_try_until_connect $1 $2
+  # not sure why the -e is required; \n is inserted for some reason
+  tar "--$3" --create --to-stdout \
+      $(echo -e $filesToTransfer | sed -e 's/ /\ /g') | \
     nc_try_until_connect $1 $2
 fi
 

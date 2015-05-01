@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # make sure both hosts are on the same network, or both are public, or
 # something! otherwise this won't work cause they can't directly access each
@@ -36,30 +36,27 @@ fi
 
 # utility functions
 function nc_try_until_connect {
-  # numTries="0"
-  echo -n " "                   # allows for \r next line
   while ! nc -c $1 $2; do
-    # ((numTries++))
-    # echo -en "\r$numTries FAILED ATTEMPTS: $1:$2"
+    echo -n ""
   done
-  echo
 }
 
 # send list of all files to remote host
 # if we ever need to use this multiple times over a massive number of files
 # we'll use some database or something; this would likely have timestamps too
-find . -type f | nc_try_until_connect $1 $2
+find . -type f -print0 | tr "\0" "\n" | nc_try_until_connect $1 $2
 
 # file arguments sent in from sender are same order of files received from tar!
 
 # get number of files from sender, quit if none new
 numFiles="$(nc -l -p $2)"
-if [ "$numFiles" = "0" ]; then
+if [ $numFiles -eq 0 ]; then
   echo "all files already synced!"
   exit
 fi
-numBytes="$(nc -l -p $2)"
 
+fileSizes="$(nc -l -p $2)"
+numBytes="$(echo "$fileSizes" | paste -sd+ - | bc)"
 
 # do the copying now
 numExtracted=0
@@ -70,3 +67,5 @@ nc -l -p $2 | tar --extract "--$3" --file=- -v 2>&1 | \
   echo "$(echo "scale=2; $numExtracted / $numFiles * 100" | bc -l)%)"
   done
 echo                            # final newline
+
+echo "synced!"
