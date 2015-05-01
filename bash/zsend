@@ -1,11 +1,20 @@
 #!/bin/bash
 
-# $1: host
-# $2: port
-# $3: compression alg: "bzip2"/"gzip"
+# make sure both hosts are on the same network, or both are public, or
+# something! otherwise this won't work cause they can't directly access each
+# other lol
+
+# $1: dir (do NOT end with /)
+# $2: host
+# $3: port
+# $4: second port
+# $5: compression alg: "bzip2"/"gzip"
 # TODO:
-# $4: service: "ssh"/"nc"
-# ${@:5}: find args
+# $6: service: "ssh"/"nc"
+# ${@:7}: find args
+
+compressionAlgs="bzip2
+gzip"
 
 if ! hash nc; then
   echo "command 'nc' not found" 1>&2
@@ -15,42 +24,48 @@ fi
 # check for actual algs
 foundAlg="false"
 for alg in compressionAlgs; do
-  if [ "$3" = $alg ]; then
+  if [ "$5" = $alg ]; then
     foundAlg="true"
   fi
 done
 if [ "foundAlg" = "false" ]; then
-  echo "compression algorithm '$3' not found. select from:" 1>&2
+  echo "compression algorithm '$5' not found. select from:" 1>&2
   echo -e $compressionAlgs
   exit -1
 fi
 
 
 # utility functions
-function nc_try_until_connect {
+function push_until_connect {
   while ! nc -c $1 $2; do
-    echo -n ""
+    sleep .1
   done
 }
 
 # listen for all files by remote host and diff to get needed files
-filesToTransfer="$(diff <(nc -l -p $2 | sort) \
-<(find . -type f ${@:5} -print0 | tr "\0" "\n" | sort) \
+filesList="$(diff <(nc -l -p $3) \
+<(find "$1" -type f ${@:7} -printf "\"%p\"\n" | sort) \
 --unchanged-line-format="" --old-line-format="")"
 
-# now tell them how many files they're getting and how big they are
-numFiles="$(echo $filesToTransfer | wc -w)"
-echo $numFiles | nc_try_until_connect $1 $2
+filesList="$(echo $filesList | sed -e 's/\" /\n/g' -e 's/\"//g')"
+# echo $filesList | sed -e 's/\" /\n/g' -e 's/\"//g' | wc -l
 
-if [ $numFiles -ne 0 ]; then
+# now tell them how many files they're getting and how big they are
+numFiles="$(echo "$filesList" | wc -l)"
+if [ "$filesList" = "" ]; then
+  numFiles=0
+fi
+echo "$numFiles" | push_until_connect $2 $3
+
+if [ "$numFiles" -ne 0 ]; then
   # now tell them how big the files are
-  for file in $filesToTransfer; do
+  # should be a for loop, but whitespace characters in filenames are annoying
+  echo "$filesList" | while read file; do
     du -b "$file" | grep -Eo "^[[:digit:]]+"
-  done | nc_try_until_connect $1 $2
-  # not sure why the -e is required; \n is inserted for some reason
-  tar "--$3" --create --to-stdout \
-      $(echo -e $filesToTransfer | sed -e 's/ /\ /g') | \
-    nc_try_until_connect $1 $2
+  done | push_until_connect $2 $3
+  echo "$filesList" | xargs -d "\n" tar "--$5" --create --to-stdout | \
+    if hash pv; then pv -pter; else cat; fi | \
+    push_until_connect $2 $3 2> >(tee >(push_until_connect $2 $4) 1>&2)
 fi
 
 echo "synced!"

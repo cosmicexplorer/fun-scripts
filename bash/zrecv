@@ -4,11 +4,14 @@
 # something! otherwise this won't work cause they can't directly access each
 # other lol
 
-# $1: host
-# $2: port
-# $3: compression alg: "bzip2"/"gzip"
+# $1: dir (do NOT end with /)
+# $2: host
+# $3: port
+# $4: second port
+# $5: compression alg: "bzip2"/"gzip"
 # TODO:
-# $4: service: "ssh"/"nc"
+# $6: service: "ssh"/"nc"
+# ${@:7}: find args
 
 compressionAlgs="bzip2
 gzip"
@@ -23,49 +26,69 @@ fi
 # check for actual algs
 foundAlg="false"
 for alg in compressionAlgs; do
-  if [ "$3" = $alg ]; then
+  if [ "$5" = $alg ]; then
     foundAlg="true"
   fi
 done
 if [ "foundAlg" = "false" ]; then
-  echo "compression algorithm '$3' not found. select from:" 1>&2
+  echo "compression algorithm '$5' not found. select from:" 1>&2
   echo $compressionAlgs
   exit -1
 fi
 
 
 # utility functions
-function nc_try_until_connect {
+function push_until_connect {
   while ! nc -c $1 $2; do
-    echo -n ""
+    sleep .1
   done
 }
 
 # send list of all files to remote host
 # if we ever need to use this multiple times over a massive number of files
 # we'll use some database or something; this would likely have timestamps too
-find . -type f -print0 | tr "\0" "\n" | nc_try_until_connect $1 $2
+find . -type f ${@:7} -printf "\"%p\"\n" | sort | push_until_connect $2 $3
 
 # file arguments sent in from sender are same order of files received from tar!
 
 # get number of files from sender, quit if none new
-numFiles="$(nc -l -p $2)"
-if [ $numFiles -eq 0 ]; then
+numFiles="$(nc -l -p $3)"
+if [ "$numFiles" -eq 0 ]; then
   echo "all files already synced!"
   exit
 fi
 
-fileSizes="$(nc -l -p $2)"
+curNumFiles="$numFiles"
+
+# get size of each file in bytes
+fileSizes="$(nc -l -p $3)"
 numBytes="$(echo "$fileSizes" | paste -sd+ - | bc)"
+
+# get bytes extracted
 
 # do the copying now
 numExtracted=0
-nc -l -p $2 | tar --extract "--$3" --file=- -v 2>&1 | \
+totalExtracted=0
+
+if ! hash pv; then
+  # if not given, no worries
+  nc -l -p $4 | while read line; do
+    echo "REMOTE: $line"
+  done &
+fi
+
+nc -l -p $3 | if hash pv; then pv -pter; else cat; fi | \
+  tar --extract "--$5" --file=- -v 2>&1 | \
   while read -r line; do
-  ((numExtracted++))
-  echo -ne "extracted $line: $numExtracted/$numFiles ("
-  echo "$(echo "scale=2; $numExtracted / $numFiles * 100" | bc -l)%)"
+    ((numExtracted++))
+    sizeExtracted="$(echo "$fileSizes" | head -n1)"
+    totalExtracted="$(echo "$totalExtracted + $sizeExtracted" | bc)"
+    ((curNumFiles--))
+    echo -ne "extracted $line: file $numExtracted/$numFiles ("
+    echo -n "$(echo "scale=2; $numExtracted / $numFiles * 100" | bc -l)%), "
+    echo -ne "byte $totalExtracted / $numBytes ("
+    echo "$(echo "scale=2; $totalExtracted / $numBytes * 100" | bc -l)%)"
+    fileSizes="$(echo "$fileSizes" | tail -n"$curNumFiles")"
   done
-echo                            # final newline
 
 echo "synced!"
