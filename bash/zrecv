@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FIXME: make it so this works with filenames with quotes and brackets in them
+# FIXME: make it so this works with filenames with quotes, slashes, and brackets
 
 # TODO: make it so this doesn't require another hostname; it can just get it
 # from the sender (maybe???)
