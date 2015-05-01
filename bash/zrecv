@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# FIXME: make it so this works with filenames with quotes and brackets in them
+
 # TODO: make it so this doesn't require another hostname; it can just get it
 # from the sender (maybe???)
 
@@ -55,7 +57,9 @@ function push_until_connect {
 
 finalFile=""
 function cleanup_last_file {
+  res=$?
   rm -f $finalFile
+  exit $res
 }
 trap cleanup_last_file SIGHUP SIGINT SIGTERM
 
@@ -106,5 +110,7 @@ nc -l -p $3 | if hash pv; then pv -pter; else cat; fi | \
     echo "$(echo "scale=2; $totalExtracted / $numBytes * 100" | bc -l)%)"
     fileSizes="$(echo "$fileSizes" | tail -n"$curNumFiles")"
   done
+
+cleanup_last_file
 
 echo "synced!"
