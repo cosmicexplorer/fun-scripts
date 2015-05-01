@@ -1,0 +1,75 @@
+#!/bin/zsh
+
+# make sure both hosts are on the same network, or both are public, or
+# something! otherwise this won't work cause they can't directly access each
+# other lol
+
+# $1: host
+# $2: port
+# $3: compression alg: "bzip2"/"gzip"
+# TODO:
+# $4: service: "ssh"/"nc"
+
+compressionAlgs="bzip2
+gzip"
+
+# check for commands
+if ! hash nc; then
+  echo "command 'nc' not found" 1>&2
+  exit -1
+fi
+
+
+# check for actual algs
+foundAlg="false"
+for alg in compressionAlgs; do
+  if [ "$3" = $alg ]; then
+    foundAlg="true"
+  fi
+done
+if [ "foundAlg" = "false" ]; then
+  echo "compression algorithm '$3' not found. select from:" 1>&2
+  echo $compressionAlgs
+  exit -1
+fi
+
+
+# utility functions
+tmpdir="$(mktemp -d)"
+fifopath="$tmpdir/fifo"
+mkfifo "$fifopath"
+function nc_try_until_connect {
+  numTries="0"
+  echo -n " "                   # allows for \r next line
+  while ! nc -cv $1 $2 2>>(cat > "$fifopath" &); do
+    ((numTries++))
+    echo -n -e "\\r$numTries FAILED ATTEMPTS: $1:$2 with \
+$(cat "$fifopath" | tr -d '\n')"
+  done
+  echo
+}
+
+# send list of all files to remote host
+# if we ever need to use this multiple times over a massive number of files
+# we'll use some database or something; this would likely have timestamps too
+find . -type f | nc_try_until_connect $1 $2
+
+# file arguments sent in from sender are same order of files received from tar!
+
+# get number of files from sender, quit if none new
+numFiles="$(nc -l -p $2)"
+if [ "$numFiles" = "0" ]; then
+  echo "all files already synced!"
+  exit
+fi
+numBytes="$(nc -l -p $2)"
+
+# do the copying now
+numExtracted=0
+nc -l -p $2 | tar --extract "--$3" --file=- -v 2>&1 | \
+  while read -r line; do
+  ((numExtracted++))
+  echo -ne "extracted $line: $numExtracted/$numFiles ("
+  echo "$(echo "scale=2; $numExtracted / $numFiles * 100" | bc -l)%)"
+  done
+echo                            # final newline

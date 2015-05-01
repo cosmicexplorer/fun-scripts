@@ -1,0 +1,60 @@
+#!/bin/zsh
+
+# $1: host
+# $2: port
+# $3: compression alg: "bzip2"/"gzip"
+# TODO:
+# $4: service: "ssh"/"nc"
+# ${@:5}: find args
+
+if ! hash nc; then
+  echo "command 'nc' not found" 1>&2
+  exit -1
+fi
+
+# check for actual algs
+foundAlg="false"
+for alg in compressionAlgs; do
+  if [ "$3" = $alg ]; then
+    foundAlg="true"
+  fi
+done
+if [ "foundAlg" = "false" ]; then
+  echo "compression algorithm '$3' not found. select from:" 1>&2
+  echo -e $compressionAlgs
+  exit -1
+fi
+
+
+# utility functions
+tmpdir="$(mktemp -d)"
+fifopath="$tmpdir/fifo"
+mkfifo "$fifopath"
+function nc_try_until_connect {
+  numTries="0"
+  echo -n " "                   # allows for \r next line
+  while ! nc -cv $1 $2 2>>(tr -d '\n' > "$fifopath" &); do
+    ((numTries++))
+    echo -en "\r$numTries FAILED ATTEMPTS: $1:$2 with $(cat "$fifopath")"
+  done
+  echo
+}
+
+# listen for all files by remote host and diff to get needed files
+filesToTransfer="$(diff <(nc -l -p $2 | sort) \
+<(find . -type f ${@:5} | sort) \
+--unchanged-line-format="" --old-line-format="")"
+
+# now tell them how many files they're getting and how big they are
+numFiles="$(echo $filesToTransfer | wc -w)"
+echo $numFiles | nc_try_until_connect $1 $2
+
+if [ "$numFiles" != "0" ]; then
+  # tell them number of bytes
+  echo $filesToTransfer | xargs du -bc | tail -n1 | grep -Eo "^[[:digit:]]+" | \
+    nc_try_until_connect $1 $2
+  tar "--$3" --create --to-stdout $filesToTransfer | nc_try_until_connect $1 $2
+fi
+
+echo "synced!"
+rm -rf "$tmpdir"
