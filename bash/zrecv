@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: make it so this doesn't require another hostname; it can just get it
+# from the sender (maybe???)
+
 # make sure both hosts are on the same network, or both are public, or
 # something! otherwise this won't work cause they can't directly access each
 # other lol
