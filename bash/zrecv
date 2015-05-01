@@ -4,14 +4,20 @@
 # something! otherwise this won't work cause they can't directly access each
 # other lol
 
-# $1: dir (do NOT end with /)
-# $2: host
-# $3: port
-# $4: second port
-# $5: compression alg: "bzip2"/"gzip"
-# TODO:
-# $6: service: "ssh"/"nc"
-# ${@:7}: find args
+if [ "$1" = '-h' ]; then
+  cat <<EOF
+\$1: dir (do NOT end with /)
+\$2: host
+\$3: port
+\$4: second port
+\$5: compression alg: "bzip2"/"gzip"
+TODO:
+\$6: service: "ssh"/"nc"
+\${@:7}: find args
+EOF
+  exit 1
+fi
+
 
 compressionAlgs="bzip2
 gzip"
