@@ -4,7 +4,7 @@
 # something! otherwise this won't work cause they can't directly access each
 # other lol
 
-if [ "$1" = '-h' ]; then
+if [ "$1" = "-h" ] || [ "$1" = "" ]; then
   cat <<EOF
 \$1: dir (do NOT end with /)
 \$2: host
