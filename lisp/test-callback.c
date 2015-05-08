@@ -2,9 +2,11 @@
 
 #include <stdio.h>
 
-char easy_write(int i) {
-  fprintf(stderr, "%d\n", i);
-  return i + 1;
+int i = 0;
+
+char easy_write(int j) {
+  i += j;
+  return i;
 }
 
 char return_your_return(char (*c)()) { return c(); }
