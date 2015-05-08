@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# FIXME: make it so this works with filenames with quotes, slashes, and brackets
+# FIXME: make it so this works with filenames with ',[,],;,\n; characters in du
+# ---> could use -z switch with grep (reads lines in by null chars)
+# FIXME: make it so this dies when the other end hangs up
 
 # TODO: make it so this doesn't require another hostname; it can just get it
 # from the sender (maybe???)
@@ -110,7 +112,5 @@ nc -l -p $3 | if hash pv; then pv -pter; else cat; fi | \
     echo "$(echo "scale=2; $totalExtracted / $numBytes * 100" | bc -l)%)"
     fileSizes="$(echo "$fileSizes" | tail -n"$curNumFiles")"
   done
-
-cleanup_last_file
 
 echo "synced!"

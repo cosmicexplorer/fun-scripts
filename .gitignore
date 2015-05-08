@@ -8,3 +8,4 @@
 TAGS
 # ignore executables
 *exe
+*.so
