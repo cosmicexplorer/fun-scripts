@@ -1,10 +1,17 @@
 #ifndef UTILITIES_HPP
 #define UTILITIES_HPP
 
+// fun attempts at functional stuff in c++
+
 #include <algorithm>
 
 namespace semantic_code_browser {
 namespace utils {
+// i wish i could figure out the templates to generically convert a sequence of
+// one type into another; currently it can only spit out a sequence of the same
+// type as the input, which is kinda useless for most map operations, which
+// typically change the value_type of the container (list<int> from
+// list<string>, for example)
 template <class UnaryOperation, class InSeqType>
 InSeqType map(InSeqType l, UnaryOperation f) {
   InSeqType out_seq;
