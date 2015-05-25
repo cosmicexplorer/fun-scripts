@@ -47,8 +47,6 @@ struct cursor_parser : qi::grammar<Iterator, cursor(), ascii::space_type> {
 
   cursor_parser() : cursor_parser::base_type(start) {
     using qi::uint_;
-    using qi::lit;
-    using qi::double_;
     using qi::lexeme;
     using ascii::char_;
 
