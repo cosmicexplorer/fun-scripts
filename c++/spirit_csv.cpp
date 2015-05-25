@@ -77,92 +77,23 @@ struct cursor_parser : qi::grammar<Iterator, cursor(), ascii::space_type> {
         quoted_string;
   }
 };
-
-template <typename Iterator>
-bool parse_cursor_as_vector(Iterator first, Iterator last,
-                            std::vector<cursor> &v) {
-  using qi::phrase_parse;
-  using qi::_1;
-  bool r = phrase_parse(first, last, (*(cursor_parser<Iterator>())),
-                        ascii::space, v);
-  if (first != last) {
-    return false;
-  }
-  return r;
-}
-
-template <typename T>
-class cin_forward_iterator : std::iterator<std::forward_iterator_tag, T> {
-private:
-  std::istream_iterator<T> i;
-
-public:
-  cin_forward_iterator() : i(std::istream_iterator<T>()) {}
-  cin_forward_iterator(std::istream &in) : i(std::istream_iterator<T>(in)) {}
-  const T &operator*() { return *i; }
-  cin_forward_iterator<T> operator++() {
-    ++i;
-    return *this;
-  };
-  cin_forward_iterator<T> operator++(int) {
-    cin_forward_iterator<T> tmp = *this;
-    i++;
-    return tmp;
-  };
-  bool operator==(const cin_forward_iterator<T> &rhs) const {
-    return i == rhs.i;
-  }
-  bool operator!=(const cin_forward_iterator<T> &rhs) const {
-    return not (*this == rhs);
-  }
-};
-}
-
-namespace std {
-template <typename T> class iterator_traits<frontend::cin_forward_iterator<T>> {
-public:
-  typedef typename std::istream_iterator<T>::value_type value_type;
-  typedef typename std::istream_iterator<T>::difference_type difference_type;
-  typedef typename std::istream_iterator<T>::reference reference;
-  typedef typename std::istream_iterator<T>::pointer pointer;
-  typedef std::forward_iterator_tag iterator_category;
-};
 }
 
 int main() {
-  // std::string str;
-  // frontend::cursor_parser<std::string::const_iterator> cp;
-  // std::vector<frontend::cursor> v;
-  // while (getline(std::cin, str)) {
-  //   frontend::cursor c;
-  //   std::string::const_iterator start = str.begin();
-  //   std::string::const_iterator end = str.end();
-  //   bool res = phrase_parse(start, end, cp, boost::spirit::ascii::space, c);
-  //   if (res and start == end) {
-  //     v.push_back(c);
-  //   } else {
-  //     std::cerr << "failed!" << std::endl;
-  //     return 1;
-  //   }
-  // }
-  // std::stringstream buf;
-  // buf << std::cin.rdbuf();
-  // std::string s(buf.str());
-  std::vector<frontend::cursor> v;
-  if (frontend::parse_cursor_as_vector(
-          frontend::cin_forward_iterator<char>(std::cin),
-          frontend::cin_forward_iterator<char>(),
-          // s.begin(), s.end(),
-          // std::istream_iterator<char>(std::cin),
-          // std::istream_iterator<char>(),
-          v)) {
-    for (auto &c : v) {
+  std::string s;
+  frontend::cursor c;
+  while (getline(std::cin, s)) {
+    c = {};                     // zero it out
+    if (phrase_parse(s.cbegin(), s.cend(),
+                     frontend::cursor_parser<std::string::const_iterator>(),
+                     boost::spirit::ascii::space, c)) {
       std::cout << boost::fusion::as_vector(c) << std::endl;
+      std::cerr << c.file << std::endl;
+    } else {
+      std::cerr << "failed!" << std::endl;
+      return 1;
     }
-    std::cerr << "completed!" << std::endl;
-    return 0;
-  } else {
-    std::cerr << "failed!" << std::endl;
-    return 1;
   }
+  std::cerr << "completed!" << std::endl;
+  return 0;
 }
