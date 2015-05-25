@@ -41,9 +41,9 @@ BOOST_FUSION_ADAPT_STRUCT(frontend::cursor, (std::string, file),
 
 namespace frontend {
 template <typename Iterator>
-struct cursor_parser : qi::grammar<Iterator, cursor(), ascii::space_type> {
-  qi::rule<Iterator, std::string(), ascii::space_type> quoted_string;
-  qi::rule<Iterator, cursor(), ascii::space_type> start;
+struct cursor_parser : qi::grammar<Iterator, cursor(), qi::blank_type> {
+  qi::rule<Iterator, std::string(), qi::blank_type> quoted_string;
+  qi::rule<Iterator, cursor(), qi::blank_type> start;
 
   cursor_parser() : cursor_parser::base_type(start) {
     using qi::uint_;
@@ -75,16 +75,23 @@ struct cursor_parser : qi::grammar<Iterator, cursor(), ascii::space_type> {
         quoted_string;
   }
 };
+
+// template <typename Iterator>
+// bool parse_cursors_as_vector(Iterator first, Iterator last,
+//                              std::vector<cursor> &v) {
+//   bool res = qi::phrase_parse(first, last, (cursor_parser % qi::eol), )
+// }
 }
 
 int main() {
   std::string s;
   frontend::cursor c;
   while (getline(std::cin, s)) {
-    c = {};                     // zero it out
+    s += '\n';
+    c = {}; // zero it out
     if (phrase_parse(s.cbegin(), s.cend(),
                      frontend::cursor_parser<std::string::const_iterator>(),
-                     boost::spirit::ascii::space, c)) {
+                     boost::spirit::qi::blank, c)) {
       std::cout << boost::fusion::as_vector(c) << std::endl;
       std::cerr << c.file << std::endl;
     } else {
