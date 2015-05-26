@@ -9,7 +9,3 @@ TAGS
 # ignore executables
 *exe
 *.so
-employee
-num_list4
-spirit_csv
-iterate_over_file
