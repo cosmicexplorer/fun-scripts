@@ -1,0 +1,22 @@
+#include <stdio.h>
+
+#include "test_header.h"
+#ifdef INSERT_HEADER_FOR_GEN
+#endif /* INSERT_HEADER_FOR_GEN */
+
+int a = 3;
+
+III i = 2;
+
+bool b = false;
+
+signed char c = 'e';
+
+size_t z = 34;
+
+char * k = "hey";
+
+struct asdf aaaa = {3, false};
+
+#ifdef INSERT_FOR_GEN
+#endif /* INSERT_FOR_GEN */

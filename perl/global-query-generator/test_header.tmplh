@@ -1,0 +1,31 @@
+#ifndef TEST_HEADER_H
+#define TEST_HEADER_H
+
+#include <stddef.h>
+#include <stdbool.h>
+
+extern int a;
+
+extern bool b;
+
+extern signed char c;
+
+extern size_t z;
+
+extern char * k;
+
+struct asdf {
+  int a;
+  bool b;
+};
+
+typedef double III;
+
+extern III i;
+
+extern struct asdf aaaa;
+
+#ifdef INSERT_FOR_GEN
+#endif /* INSERT_FOR_GEN */
+
+#endif /* TEST_HEADER_H */

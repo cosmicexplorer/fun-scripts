@@ -1,0 +1,11 @@
+test_header.c
+test_header.h
+*.json
+*.ast
+.unique_files
+*.o
+main
+*.yaml
+*.tt
+
+test
