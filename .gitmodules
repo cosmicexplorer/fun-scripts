@@ -1,6 +1,3 @@
-[submodule "perl/global-query-generator"]
-	path = perl/global-query-generator
-	url = /home/cosmicexplorer/snippets/perl/global-query-generator
 [submodule "perl/threading-events"]
 	path = perl/threading-events
 	url = /home/cosmicexplorer/snippets/perl/threading-events/

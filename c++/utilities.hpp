@@ -5,8 +5,6 @@
 
 #include <algorithm>
 
-namespace semantic_code_browser {
-namespace utils {
 // i wish i could figure out the templates to generically convert a sequence of
 // one type into another; currently it can only spit out a sequence of the same
 // type as the input, which is kinda useless for most map operations, which
@@ -36,8 +34,6 @@ typename InSeqType::value_type foldr(InSeqType l, BinaryOperation f) {
 template <class BinaryOperation, class InSeqType>
 typename InSeqType::value_type foldl(InSeqType l, BinaryOperation f) {
   return std::accumulate(++l.rbegin(), l.rend(), *l.rbegin(), f);
-}
-}
 }
 
 #endif /* UTILITIES_HPP */

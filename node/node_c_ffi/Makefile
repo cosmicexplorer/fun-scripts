@@ -1,3 +1,5 @@
+.PHONY: out npm_deps
+
 CC = clang
 COFFEE = coffee
 CFLAGS = -std=c11 -Wall -Werror
@@ -15,8 +17,11 @@ JS = run.js node-object-stream.js
 %.so: %.o
 	$(CC) $(LIB_LINK_FLAGS) $^ -o $@
 
-%.js: %.coffee
+%.js: %.coffee npm_deps
 	$(COFFEE) -c $^
+
+npm_deps:
+	npm install
 
 out: $(OBJ) $(JS)
 
