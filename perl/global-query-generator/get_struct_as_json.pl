@@ -19,6 +19,8 @@ my $current_indentation = 0;
 
 my $marker = "---";
 
+# TODO: close $inhandle!
+
 open(my $inhandle, "<", $infile)
   or die "$0: can't open $infile for reading: $!";
 while (<$inhandle>) {
@@ -273,4 +275,3 @@ sub get_list_as_string {
   $str = $str . "}";
   return $str;
 }
-

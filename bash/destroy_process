@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ "$2" = "" ]; then
+    lim=1
+else
+    lim="$2"
+fi
+
+for i in $(seq 1 $lim); do
+    [ -d "/proc/$1" ] || exit
+    kill "$1"
+    for sig in TERM INT HUP ABRT QUIT SEGV BUS ALRM FPE ILL PIPE USR1 USR2 \
+        PROF SYS TRAP VTALRM XCPU XFSZ; do
+        [ -d "/proc/$1" ] || exit
+        kill -s "$sig" "$1"
+    done
+done
