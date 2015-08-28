@@ -78,11 +78,10 @@ incorrectly set."
   (map nil #'vcsfmt-process-char *input-seq*)
   )
 
-(declaim (inline vcsfmt-process-char))
-(defun vcsfmt-process-char (nucleotide)
-  "Add any additional formatting to output char sequence as required.
-As of now, just adds newlines between ORFs."
-  (declare (optimize (speed 3) (debug 0) (safety 0) (compilation-speed 0)))
-  (declare (character nucleotide) (string output-seq))
-  
-  )
+;; (declaim (inline vcsfmt-process-char))
+;; (defun vcsfmt-process-char (nucleotide)
+;;   "Add any additional formatting to output char sequence as required.
+;; As of now, just adds newlines between ORFs."
+;;   (declare (optimize (speed 3) (debug 0) (safety 0) (compilation-speed 0)))
+;;   (declare (character nucleotide) (string output-seq))
+;;   )
