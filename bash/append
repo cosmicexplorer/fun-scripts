@@ -12,7 +12,7 @@ trap clean SIGHUP SIGINT SIGTERM
 cat - > "$tmp1"
 for arg; do
   cat "$tmp1" "$arg" > "$tmp2"
-  mv "$tmp2" "$arg"
+  cp "$tmp2" "$arg"
 done
 
 clean
