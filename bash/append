@@ -1,0 +1,18 @@
+#!/bin/sh
+
+tmp1="$(mktemp)"
+tmp2="$(mktemp)"
+
+function clean {
+  rm -f "$tmp1" "$tmp2"
+}
+
+trap clean SIGHUP SIGINT SIGTERM
+
+cat - > "$tmp1"
+for arg; do
+  cat "$tmp1" "$arg" > "$tmp2"
+  mv "$tmp2" "$arg"
+done
+
+clean
