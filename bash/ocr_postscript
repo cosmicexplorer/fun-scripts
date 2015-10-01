@@ -1,0 +1,21 @@
+#!/bin/sh
+
+tmpdir="$(mktemp -d)"
+outfilename="$tmpdir/$(basename $1).png"
+
+function clean {
+  rm -rf "$tmpdir"
+}
+
+trap clean SIGHUP SIGINT SIGTERM
+
+gs -sstdout=%stderr -sDEVICE=pnggray -sOutputFile="$outfilename" -dSAFER \
+   -dBATCH -dFirstPage=2 -dNOPAUSE -r"$2" "$1"
+echo "ghostscript done, tesseractifying..." 1>&2
+if [ "$HOCR" != "" ]; then
+  tesseract "$outfilename" "$3" hocr
+else
+  tesseract "$outfilename" "$3"
+fi
+
+clean

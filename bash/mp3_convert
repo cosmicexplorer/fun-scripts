@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for arg; do
+  basename="$(echo "$arg" | grep -Po '^.*\.')"
+  mp3name="$basename"mp3
+  ffmpeg -y -i "$1" -acodec libmp3lame -ab 320k "$mp3name"
+done
+
