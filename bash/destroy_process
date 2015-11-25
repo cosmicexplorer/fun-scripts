@@ -1,17 +1,22 @@
 #!/bin/bash
 
+procnum="$1"
+
 if [ "$2" = "" ]; then
     lim=1
 else
     lim="$2"
 fi
 
+all_sigs="$(kill -l | tr -s '\t' '\n' | sed -re 's/[0-9]+\)//g' -e 's/^\s+//g')"
+
 for i in $(seq 1 $lim); do
-    [ -d "/proc/$1" ] || exit
-    kill "$1"
-    for sig in TERM INT HUP ABRT QUIT SEGV BUS ALRM FPE ILL PIPE USR1 USR2 \
-        PROF SYS TRAP VTALRM XCPU XFSZ; do
-        [ -d "/proc/$1" ] || exit
-        kill -s "$sig" "$1"
+    if ! [ -d "/proc/$procnum" ]; then exit; fi
+    echo "$all_sigs" | while read sig; do
+        if [ -d "/proc/$procnum" ]; then
+            kill -s "$sig" "$procnum"
+        else
+            exit
+        fi
     done
 done
