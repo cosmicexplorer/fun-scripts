@@ -1,0 +1,15 @@
+#!/bin/sh
+
+lexfile=$1
+grammar=$2
+
+emacs_cmd='(princ (replace-regexp-in-string "\n%{\\(.\\|\n\\)*?\n%}" "" (buffer-string)))'
+
+echo '/* https://nolanlawson.github.io/jison-debugger/ */'
+echo '%lex'
+sed '/^$/d' "$lexfile"
+echo '/lex'
+perl -pe 's/\s*->.*//g' "$grammar" | \
+  emacs --insert /dev/stdin --batch --eval "$emacs_cmd" | \
+  perl -pe 's/\n?\s*\{.*\}\n?\s*//g' | \
+  sed '/^$/d'
