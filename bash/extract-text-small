@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# http://kiirani.com/2013/03/22/tesseract-pdf.html
+
+set -e
+
+pdf="$1"
+outfile="$2"
+if [ "$outfile" = "" ]; then
+  echo 'must provide output file (- for stdout)' >&2
+  exit 1
+fi
+
+tmpdir="$(mktemp -d)"
+cleanup() {
+  rm -rf "$tmpdir"
+}
+trap cleanup EXIT
+
+img="$tmpdir/out.tiff"
+convert -density 300 -depth 9 -background white -flatten +matte \
+        "$pdf" "$img" >&2
+out="$tmpdir/out"
+outtext="$out.txt"
+tesseract "$img" "$out" >&2
+
+if [ "$outfile" = "-" ]; then
+  cat "$outtext"
+else
+  cat "$outtext" > "$outfile"
+fi
