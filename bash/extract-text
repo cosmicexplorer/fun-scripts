@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# https://stackoverflow.com/questions/7462633/count-pages-in-pdf-file-using-imagemagick-php
+# https://unix.stackexchange.com/questions/14640/use-convert-to-grab-a-specific-page-from-a-pdf-file
+# http://kiirani.com/2013/03/22/tesseract-pdf.html
+
+set -e
+set -o pipefail
+
+pdf="$1"
+outfile="$2"
+if [ "$outfile" = "" ]; then
+  echo 'must provide output file (- for stdout)' >&2
+  exit 1
+fi
+
+tmpdir="$(mktemp -d)"
+echo "tmpdir: $tmpdir"
+cleanup() {
+  echo "removing $tmpdir"
+  rm -rf "$tmpdir"
+}
+trap cleanup EXIT
+
+pages="$(pdfinfo "$pdf" | grep Pages | sed -re 's/Pages:\s+//g')"
+finalpage="$(($pages - 1))"
+
+for page in $(seq 0 "$finalpage"); do
+  outimage="$tmpdir"/"$pdf"-img-"$page".tiff
+  echo "converting page $page -> $outimage" >&2
+  convert -density 300 -depth 8 -background white -flatten +matte \
+          "$pdf""[""$page""]" "$outimage" >&2
+  outtext="$tmpdir"/out-"$page"-tesseract
+  echo "OCRing page $page -> $outtext.txt" >&2
+  tesseract "$outimage" "$outtext" >&2
+done
+
+if [ "$outfile" = "-" ]; then
+  cat "$tmpdir"/out-*-tesseract.txt
+else
+  cat "$tmpdir"/out-*-tesseract.txt > "$outfile"
+fi
