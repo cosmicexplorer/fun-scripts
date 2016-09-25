@@ -29,6 +29,7 @@ requests_iterable = grequests.imap(requests_unsent)
 
 parser = FetchTitleTag()
 
+# this is done synchronously -- can also potentially do on a queue
 for response in requests_iterable:
     parser.feed(response.text)
     # prints text of the response (just an html page)
