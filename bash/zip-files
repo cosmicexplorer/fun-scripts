@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# ./zip-files DELIM FILES...
+
+# does paste on FILES... using DELIM, but stops after any given file runs out
+
+function prepend_str {
+  str="$1"
+  file="$2"
+  echo "<(sed -e 's/^/$str/' '$file')"
+}
+
+function make_prepended {
+  prepend_str 1 "$1"
+  for file in "${@:2}"; do
+    prepend_str 2 "$file"
+  done
+}
+
+delim="$1"
+
+prepended="$(make_prepended "${@:2}" | tr '\n' ' ')"
+
+bash -c "paste -d '\\n' $prepended" | \
+  sed -n -r -e '/^$/ q' \
+      -e "/^1/ { s/^1//g; x; /^$/ ! { s/\n2/$delim/g; p; g } }" \
+      -e '/^2/ H'
