@@ -11,6 +11,19 @@
 
 # the above example stops after the second line because the second input file
 # only has two lines of output
+# use - for stdin
+
+argc="$#"
+argv="$@"
+
+source "utils.sh"
+
+if [ "$argc" -lt 2 ]; then
+  cat >&2 '-' <(print_args $argv) <<EOF
+At least one input file must be given. The arguments provided were:
+EOF
+  exit 1
+fi
 
 function prepend_str {
   str="$1"
