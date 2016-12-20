@@ -2,7 +2,15 @@
 
 # ./zip-files DELIM FILES...
 
-# does paste on FILES... using DELIM, but stops after any given file runs out
+# does paste on FILES... using DELIM, but stops after any given file runs out of
+# lines, e.g.:
+
+# > zip-files ',' <(yes wow) <(echo "hey\nya")
+# wow,hey
+# wow,ya
+
+# the above example stops after the second line because the second input file
+# only has two lines of output
 
 function prepend_str {
   str="$1"
