@@ -1,0 +1,241 @@
+Terminals unused in grammar
+
+   T_IDENTIFIER
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: expr
+
+    2 expr: T_NUMBER
+    3     | expr T_PLUS expr
+    4     | expr T_MINUS expr
+    5     | expr T_MUL expr
+    6     | expr T_DIV expr
+    7     | T_MINUS expr
+    8     | T_LPAREN expr T_RPAREN
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+T_IDENTIFIER (258)
+T_NUMBER (259) 2
+T_LPAREN (260) 8
+T_RPAREN (261) 8
+T_PLUS (262) 3
+T_MINUS (263) 4 7
+T_MUL (264) 5
+T_DIV (265) 6
+UNARY (266)
+
+
+Nonterminals, with rules where they appear
+
+$accept (12)
+    on left: 0
+program (13)
+    on left: 1, on right: 0
+expr (14)
+    on left: 2 3 4 5 6 7 8, on right: 1 3 4 5 6 7 8
+
+
+State 0
+
+    0 $accept: . program $end
+
+    T_NUMBER  shift, and go to state 1
+    T_LPAREN  shift, and go to state 2
+    T_MINUS   shift, and go to state 3
+
+    program  go to state 4
+    expr     go to state 5
+
+
+State 1
+
+    2 expr: T_NUMBER .
+
+    $default  reduce using rule 2 (expr)
+
+
+State 2
+
+    8 expr: T_LPAREN . expr T_RPAREN
+
+    T_NUMBER  shift, and go to state 1
+    T_LPAREN  shift, and go to state 2
+    T_MINUS   shift, and go to state 3
+
+    expr  go to state 6
+
+
+State 3
+
+    7 expr: T_MINUS . expr
+
+    T_NUMBER  shift, and go to state 1
+    T_LPAREN  shift, and go to state 2
+    T_MINUS   shift, and go to state 3
+
+    expr  go to state 7
+
+
+State 4
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 8
+
+
+State 5
+
+    1 program: expr .
+    3 expr: expr . T_PLUS expr
+    4     | expr . T_MINUS expr
+    5     | expr . T_MUL expr
+    6     | expr . T_DIV expr
+
+    T_PLUS   shift, and go to state 9
+    T_MINUS  shift, and go to state 10
+    T_MUL    shift, and go to state 11
+    T_DIV    shift, and go to state 12
+
+    $default  reduce using rule 1 (program)
+
+
+State 6
+
+    3 expr: expr . T_PLUS expr
+    4     | expr . T_MINUS expr
+    5     | expr . T_MUL expr
+    6     | expr . T_DIV expr
+    8     | T_LPAREN expr . T_RPAREN
+
+    T_RPAREN  shift, and go to state 13
+    T_PLUS    shift, and go to state 9
+    T_MINUS   shift, and go to state 10
+    T_MUL     shift, and go to state 11
+    T_DIV     shift, and go to state 12
+
+
+State 7
+
+    3 expr: expr . T_PLUS expr
+    4     | expr . T_MINUS expr
+    5     | expr . T_MUL expr
+    6     | expr . T_DIV expr
+    7     | T_MINUS expr .
+
+    $default  reduce using rule 7 (expr)
+
+
+State 8
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 9
+
+    3 expr: expr T_PLUS . expr
+
+    T_NUMBER  shift, and go to state 1
+    T_LPAREN  shift, and go to state 2
+    T_MINUS   shift, and go to state 3
+
+    expr  go to state 14
+
+
+State 10
+
+    4 expr: expr T_MINUS . expr
+
+    T_NUMBER  shift, and go to state 1
+    T_LPAREN  shift, and go to state 2
+    T_MINUS   shift, and go to state 3
+
+    expr  go to state 15
+
+
+State 11
+
+    5 expr: expr T_MUL . expr
+
+    T_NUMBER  shift, and go to state 1
+    T_LPAREN  shift, and go to state 2
+    T_MINUS   shift, and go to state 3
+
+    expr  go to state 16
+
+
+State 12
+
+    6 expr: expr T_DIV . expr
+
+    T_NUMBER  shift, and go to state 1
+    T_LPAREN  shift, and go to state 2
+    T_MINUS   shift, and go to state 3
+
+    expr  go to state 17
+
+
+State 13
+
+    8 expr: T_LPAREN expr T_RPAREN .
+
+    $default  reduce using rule 8 (expr)
+
+
+State 14
+
+    3 expr: expr . T_PLUS expr
+    3     | expr T_PLUS expr .
+    4     | expr . T_MINUS expr
+    5     | expr . T_MUL expr
+    6     | expr . T_DIV expr
+
+    T_MUL  shift, and go to state 11
+    T_DIV  shift, and go to state 12
+
+    $default  reduce using rule 3 (expr)
+
+
+State 15
+
+    3 expr: expr . T_PLUS expr
+    4     | expr . T_MINUS expr
+    4     | expr T_MINUS expr .
+    5     | expr . T_MUL expr
+    6     | expr . T_DIV expr
+
+    T_MUL  shift, and go to state 11
+    T_DIV  shift, and go to state 12
+
+    $default  reduce using rule 4 (expr)
+
+
+State 16
+
+    3 expr: expr . T_PLUS expr
+    4     | expr . T_MINUS expr
+    5     | expr . T_MUL expr
+    5     | expr T_MUL expr .
+    6     | expr . T_DIV expr
+
+    $default  reduce using rule 5 (expr)
+
+
+State 17
+
+    3 expr: expr . T_PLUS expr
+    4     | expr . T_MINUS expr
+    5     | expr . T_MUL expr
+    6     | expr . T_DIV expr
+    6     | expr T_DIV expr .
+
+    $default  reduce using rule 6 (expr)
