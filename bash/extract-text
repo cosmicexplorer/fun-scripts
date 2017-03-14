@@ -2,7 +2,7 @@
 
 # https://stackoverflow.com/questions/7462633/count-pages-in-pdf-file-using-imagemagick-php
 # https://unix.stackexchange.com/questions/14640/use-convert-to-grab-a-specific-page-from-a-pdf-file
-# http://kiirani.com/2013/03/22/tesseract-pdf.html
+# https://kiirani.com/2013/03/22/tesseract-pdf.html
 
 set -e
 set -o pipefail

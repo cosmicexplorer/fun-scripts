@@ -39,7 +39,7 @@
 # find which student folders have no such assignment folders
 
 
-## http://stackoverflow.com/a/246128/3753841
+## https://stackoverflow.com/a/246128/3753841
 WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ls -d */ | grep -o "[[:alnum:]]*" > all_user_folders

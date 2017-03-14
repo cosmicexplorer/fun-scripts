@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# http://kiirani.com/2013/03/22/tesseract-pdf.html
+# https://kiirani.com/2013/03/22/tesseract-pdf.html
 
 set -e
 
