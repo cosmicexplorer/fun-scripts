@@ -1,4 +1,4 @@
-# options documented in http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# options documented in https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
 Language: Cpp # used for C as well, not just C++
 AlignEscapedNewlinesLeft: true
@@ -7,7 +7,7 @@ AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: false
+AlwaysBreakAfterReturnType: false
 AlwaysBreakBeforeMultilineStrings: false
 BinPackParameters: false
 BreakBeforeBinaryOperators: false

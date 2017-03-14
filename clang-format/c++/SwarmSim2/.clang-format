@@ -1,4 +1,4 @@
-# options documented in http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# options documented in https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
 Language: Cpp # used for C as well, not just C++
 AccessModifierOffset: -1 # in line with class declaration
@@ -8,7 +8,7 @@ AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: false
+AlwaysBreakAfterReturnType: false
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
 BinPackParameters: false
