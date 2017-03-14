@@ -1,5 +1,5 @@
 ;; testing callbacks from c code
-;;; http://sbcl.org/asdf/Using-asdf-to-load-systems.html
+;;; https://sbcl.org/asdf/Using-asdf-to-load-systems.html
 ;;; https://common-lisp.net/project/cffi/manual/html_node/Installation.html
 (asdf:operate 'asdf:load-op 'cffi)
 (use-package 'cffi)

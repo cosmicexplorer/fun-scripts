@@ -1,4 +1,4 @@
-# http://stackoverflow.com/questions/29721851/how-to-pause-and-unpause-node-object-stream-while-processing-its-output
+# https://stackoverflow.com/questions/29721851/how-to-pause-and-unpause-node-object-stream-while-processing-its-output
 
 fs = require 'fs'
 

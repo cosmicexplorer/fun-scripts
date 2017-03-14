@@ -17,12 +17,12 @@ class FetchTitleTag(HTMLParser):
             print('title: "%s"' % data.strip())
 
 urls = [
-    'http://google.com',
-    'http://github.com'
+    'https://google.com',
+    'https://github.com'
 ]
 
 # version using grequests (https://github.com/kennethreitz/grequests)
-# same api as requests, mostly (http://docs.python-requests.org/en/master/)
+# same api as requests, mostly (https://docs.python-requests.org/en/master/)
 requests_unsent = (grequests.get(u) for u in urls)
 # like map, but returns generator
 requests_iterable = grequests.imap(requests_unsent)

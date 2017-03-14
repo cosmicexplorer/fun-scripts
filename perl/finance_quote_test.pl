@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# NOT MINE: http://finance-quote.sourceforge.net/tpj/finance-quote.txt
+# NOT MINE: https://finance-quote.sourceforge.net/tpj/finance-quote.txt
 
 use strict;
 use warnings;
