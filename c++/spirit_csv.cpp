@@ -1,5 +1,5 @@
 // following example from:
-// http://www.boost.org/doc/libs/1_58_0/libs/spirit/example/qi/employee.cpp, and
+// https://www.boost.org/doc/libs/1_58_0/libs/spirit/example/qi/employee.cpp, and
 // num_list4.cpp, and others
 
 #define BOOST_SPIRIT_DEBUG 1
