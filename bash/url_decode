@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+if [[ -v URL_ENC ]]; then
+  fun=url_encode
+else
+  fun=url_decode
+fi
+
+cmd="$(printf '%1s = %2s(%1$s)' '$_' "$fun")"
+perl -MURL::Encode=:all -pe "$cmd"
