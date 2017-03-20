@@ -1,0 +1,9 @@
+#!/bin/sh
+
+export devdir='/sys/bus/usb/devices'
+
+find -L "$devdir" -maxdepth 2 -type f -name interface | \
+  parallel [ MTP = '$(<"{}")' ] '&&' \
+           printf '%s\\n%s' '{=s/^.*\/([^\/:]+:[^\/]+)\/[^\/]+$/\1/g=}' | \
+  parallel printf '%s=%s\\n' \
+           '$(<"$devdir/{}/modalias")' '$(<"$devdir/{=s/:.*$//g=}/product")'
