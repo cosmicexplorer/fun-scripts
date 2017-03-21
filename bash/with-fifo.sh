@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # regexp is from from $(man chmod)
 export valid_mode_regexp='^[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+$'
 function get-check-mode {
