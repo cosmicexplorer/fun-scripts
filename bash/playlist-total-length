@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+infile="$1"
+this_dir="$(dirname "${(%):-%N}")"
+source "$this_dir/utils.zsh"
+
+decode-asf-to-urls "$infile" | parallel song-length | sum

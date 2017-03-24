@@ -1,0 +1,6 @@
+#!/bin/sh
+
+infile="$1"
+
+ffprobe "$infile" -v quiet -show_entries 'root' -print_format json | \
+  jq -r '.format.duration'

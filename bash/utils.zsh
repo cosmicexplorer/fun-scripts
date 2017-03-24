@@ -42,3 +42,11 @@ function env_or_default {
     echo "$default"
   fi
 }
+
+function sum {
+  local st=0
+  while read -r num; do
+    ((st += num))
+  done
+  echo "$st"
+}

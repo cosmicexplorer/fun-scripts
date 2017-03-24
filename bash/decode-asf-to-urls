@@ -1,0 +1,6 @@
+#!/bin/sh
+
+infile="$1"
+
+xmlstarlet sel -E 'utf-8' -T -t -m '//ref/@href' -v '.' -n "$infile" | \
+  url_decode
