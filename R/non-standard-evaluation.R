@@ -1,6 +1,14 @@
 ## TODO: make this into a good library
 ## also think about implementing syntax sugar like magrittr!
 
+## TODO: make a way to merge environments which respects parenthood (transitive
+## parenthood too!), but also allows the order of the arguments (or some other
+## metric) to determine precedence of bindings in merged
+
+## TODO: make a way to iterate over both keys and values at the same time for an
+## env, named vector, or named list (just getting the names list and running off
+## of that alone assumes unique names or is hard lol)
+
 switch_do_default_desc <- "input"
 
 switch_do <- function(type_val, desc = switch_do_default_desc, ...) {
@@ -114,3 +122,28 @@ make_lambda <- function (argspec, block) {
 ## f <- make_lambda({print("woah"); z + 2})
 ## z <- 4
 ## f()
+
+## NOTE: this is more of a utility function than a macro -- still applicable, i
+## think
+extract_delims <- function (n, delim_maybe,
+                            null_alt = rep("", n),
+                            true_alt = rep("", n)) {
+    result <- if (is.null(delim_maybe)) { null_alt }
+              else if (delim_maybe) { true_alt }
+              else { delim_maybe }
+    stopifnot(is.vector(result) &&
+              length(result) == n &&
+              is.character(result))
+    result
+}
+
+make_delim_extractor <- function (true_default) {
+    stopifnot(is.vector(true_default) &&
+              is.character(true_default))
+    n <- length(true_default)
+    function (arg) {
+        extract_delims(n, arg, true_alt = true_default)
+    }
+}
+
+paren_delims <- make_delim_extractor(c("(", ")"))
