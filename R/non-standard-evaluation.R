@@ -147,3 +147,82 @@ make_delim_extractor <- function (true_default) {
 }
 
 paren_delims <- make_delim_extractor(c("(", ")"))
+
+
+## entries is a named list with quoted values -- a NULL value means a non-value
+## wrap this with as.pairlist to use it as a function -- see "anon_one"
+make_alist <- function (keys, values, env = parent.frame()) {
+    len <- length(keys)
+    stopifnot(!any(duplicated(keys)) &&
+              len == length(values))
+    ret <- rep(alist(,)[1], len)
+    names(ret) <- eval(keys, env)
+    for (i in 1:len) {
+        key <- keys[[i]]
+        val <- values[[i]]
+        if (!is.null(val)) {
+            ret[[key]] <- eval(val, env)
+        }
+    }
+    ret
+}
+
+add_entries_env <- function (env, entries) {
+    created <- new.env(parent = env)
+    for (n in names(entries)) {
+        assign(n, entries[n], envir = created)
+    }
+    created
+}
+
+anon_one <- function (body, name = ".", env = parent.frame()) {
+    args <- make_alist(list(name), list(NULL), env = env)
+    eval(call("function", as.pairlist(args), substitute(body)), env)
+}
+
+option_pred <- is.null
+
+with_bindings <- function (bindings, expr, env = parent.frame()) {
+    cat("enter with bind\n")
+    subbed <- substitute(expr)
+    p(subbed)
+    pf <- parent.frame()
+    bind_sub <- eval(substitute(bindings), pf)
+    p(bind_sub)
+    bind_env <- list2env(bind_sub, parent = env)
+    p(desc = "huh",
+      get("option_pred", envir = bind_env))
+    ret <- eval(subbed, bind_env, enclos = emptyenv())
+    cat("exit with bind\n")
+    ret
+}
+
+set_option_pred <- function (pred, block, env = parent.frame()) {
+    cat('enter set pred\n')
+    subbed_block <- substitute(block)
+    p(subbed_block)
+    toEval <- bquote(
+        with_bindings(.(list(option_pred = match.fun(pred))),
+                      .(subbed_block),
+                      env = .(env)))
+    p(toEval)
+    ret <- eval(toEval)
+    cat("exit set pred\n")
+    ret
+}
+
+`%?%` <- function (lhs, rhs_nse, env = parent.frame()) {
+    cat("enter op\n")
+    pred <- get("option_pred", envir = env)
+    p(pred)
+    ret <- if (pred(lhs)) { lhs }
+    else {
+        rhs_expr <- substitute(rhs_nse)
+        p(rhs_expr)
+        bound_eval <- bquote(with_bindings(list(. = lhs), .(rhs_expr),
+                                           env = .(env)))
+        eval(bound_eval)
+    }
+    cat("exit op\n")
+    ret
+}
