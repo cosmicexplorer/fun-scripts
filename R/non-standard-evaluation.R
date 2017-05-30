@@ -226,3 +226,150 @@ set_option_pred <- function (pred, block, env = parent.frame()) {
     cat("exit op\n")
     ret
 }
+
+reduce_until_helper <- function (value, rest, test, f, default, frame) {
+    delayedAssign("retVal", eval(default, frame))
+    if (test(value)) { return(retVal) }
+    for (el in rest) {
+        value <- f(value, el)
+        if (test(value)) { return(retVal) }
+    }
+}
+
+reduce_until <- function (x, init, until, f, default, right = F, invert = F,
+                          frame = parent.frame()) {
+    test <- if (invert) { Negate(until) } else { until }
+    directed <- if (right) { rev(x) } else { x }
+    delayedAssign("accumulation", if (hasArg(init)) {
+                                      list(val = init, rest = directed)
+                                  } else {
+                                      stopifnot(length())
+                                      list(val = )
+                                  })
+    delayedAssign("retVal", if (hasArg(default)) { eval(default, frame) }
+                            else { accumulated })
+    if (hasArg(init)) {
+        accumulated <- init
+        hasValue = T
+    } else if ()
+    directed <- if (right) { rev(x) } else { x }
+    accumulated <-
+        if (hasArg(init)) {
+            init
+        } else if (length(x) == 0) {
+            stop(paste("no 'init' or 'default' value provided",
+                       "to return for zero-length collection 'x'"))
+        } else { first(directed) }
+    delayedAssign("directed", if (right) { rev(x) }
+                              else { x })
+    delayedAssign("accumulated",
+                  )
+    delayedAssign("rest", if (hasArg(init)) { directed }
+                          else { tail(directed, n = -1) })
+
+    should_exit <- if (invert) { quote(!until(accumulated)) }
+                   else { quote(until(accumulated)) }
+    if (xor(until(accumulated), invert)) {
+        return(retVal)
+    }
+    for (el in rest) {
+        accumulated <- f(accumulated, el)
+        if (xor(until(accumulated), invert)) {
+            return(retVal)
+        }
+    }
+    accumulated
+}
+
+can_iterate <- function (arg, each, test) {
+    if (!(is.list(arg) || is.vector(arg))) { return(FALSE) }
+    if (length(arg) == 0) { return(FALSE) }
+    if (hasArg(each)) {
+        for (el in arg) {
+            if (!each(el))
+        }
+    }
+
+    if () {
+        if (hasArg(each)) {
+            for (el in arg) {
+                if (!each(el)) { return(FALSE) }
+            }
+        }
+        if (hasArg(test)) { test(arg) }
+        TRUE
+    }
+        (!hasArg(test) || )
+    if (is.list(arg)) {
+        if (length(arg) == 0) {
+            FALSE
+        } else {
+            if (hasArg(check)) {}
+            checks <- lapply(arg, check)
+            all(unlist(checks))
+        } else { TRUE }
+    } else if (is.vector(arg)) {
+
+    } else { FALSE }
+    if (!(is.list(arg) || is.vector(arg))) { return(FALSE) }
+    if (length(arg) == 0) { return(FALSE) }
+    if (hasArg(check)) {
+        if (is.vector(arg)) { check(arg) }
+        else if (is.list(arg)) {
+            checks <- lapply(arg, check)
+            all(unlist(checks))
+        }
+        for (el in arg) {
+            if (!check(el)) { return(FALSE) }
+        }
+    }
+    TRUE
+}
+
+do_unless <- function (val, block, pred = is.null, invert = F,
+                       name = ".", frame = parent.frame()) {
+    if (xor(pred(val), invert)) { return(val) }
+
+    subbed <- substitute(block)
+    print(subbed)
+    env_with_val <- new.env(list(. = val), parent = frame)
+    assign(name, val, envir = env_with_val)
+    eval(subbed, envir = env_with_val, enclos = emptyenv())
+}
+
+split_at <- function (coll, init, frame = parent.frame()) {
+
+    if (eval(hasArg(init), envir = frame, enclos = frame))
+}
+
+reduce_until <- function (seq, f, init, until, default,
+                          frame = parent.frame()) {
+    stopifnot(hasArg(init) || length(seq) != 0)
+    delayedAssign()
+    accum <- if (hasArg(init)) {
+                 list(val = eval(init, frame), rest = seq)
+             } else {
+                 list(val = first(seq), rest = tail(seq, n = -1))
+             }
+    if (until(accum$val)) {  }
+
+    Reduce(x = seq)
+}
+
+## TODO: make this print recursion depth!
+p <- function (expr, desc, top = "---\n", bottom = "***\n", defn = "+++\n",
+               pf = parent.frame()) {
+    cat(top)
+    if (hasArg(desc)) {
+        cat(paste("(", desc, ")\n", sep = ""))
+    }
+    subbed <- substitute(expr)
+    to_strings <- capture.output(print(subbed))
+    out_str <- paste0(collapse = "\n", c(to_strings, ""))
+    cat(out_str)
+    cat(defn)
+    ret <- eval(subbed, pf)
+    print(ret)
+    cat(bottom)
+    expr
+}
