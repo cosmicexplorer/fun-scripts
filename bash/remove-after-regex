@@ -1,0 +1,8 @@
+#!/bin/sh
+
+grep_pattern="$1"
+sed_quit_command="$2"
+fnames=${@:3}
+
+grep -q -P "$grep_pattern" $fnames &&
+  sed -i -n -e "$sed_quit_command" -e 'p' $fnames
