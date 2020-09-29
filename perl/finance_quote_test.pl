@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # NOT MINE: https://finance-quote.sourceforge.net/tpj/finance-quote.txt
 
