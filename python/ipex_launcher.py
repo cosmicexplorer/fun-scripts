@@ -20,7 +20,8 @@ import os
 import shutil
 import sys
 import tempfile
-from typing import Any, cast, Dict, Iterable, List, Optional, Union
+from textwrap import TextWrapper
+from typing import Any, cast, Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
 from pex import resolver
 from pex.common import open_zip
@@ -55,6 +56,23 @@ def modify_pex_info(pex_info: PexInfo, **kwargs: PexInfoValues) -> PexInfo:
 
 class IPEXVariables(Variables):
   """Make use of Pex's existing env var config API, and extend it to ipex-specific features."""
+
+  @classmethod
+  def iter_ipex_help(cls) -> Iterator[Tuple[str, str, str]]:
+    for variable_name, value in sorted(cls.__dict__.items()):  # type: ignore[misc]
+      if not variable_name.startswith('IPEX_'):
+        continue
+      variable_type, variable_text = cls.process_pydoc(getattr(value, '__doc__'))  # type: ignore[misc]
+      yield variable_name, variable_type, variable_text
+
+  @property
+  def IPEX_SHOW_HELP(self) -> Optional[bool]:
+    """Boolean.
+
+    The ipex should display the docstrings for all IPEX_* variables to stderr, then exit with error.
+    Default: false.
+    """
+    return self._get_bool('IPEX_SHOW_HELP', default=False)
 
   @property
   def IPEX_SKIP_EXECUTION(self) -> Optional[bool]:
@@ -301,7 +319,18 @@ def _determine_hydrated_pex_location(self: str) -> str:
   return hydrated_pex_location
 
 
+def _print_variable_help() -> None:
+  for variable_name, variable_type, variable_help in IPEXVariables.iter_ipex_help():
+    _log(f'\n{variable_name}: {variable_type}\n')
+    for line in TextWrapper(initial_indent=' ' * 4, subsequent_indent=' ' * 4).wrap(variable_help):
+      _log(line)
+
+
 def main(self: str) -> None:
+  if IPEX_ENV.IPEX_SHOW_HELP:
+    _print_variable_help()
+    sys.exit(1)
+
   hydrated_pex_location = _determine_hydrated_pex_location(self)
 
   # NB: This location currently may be a PEX file *or* a directory.
