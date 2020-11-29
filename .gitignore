@@ -9,3 +9,4 @@ TAGS
 # ignore executables
 *exe
 *.so
+__pycache__/
